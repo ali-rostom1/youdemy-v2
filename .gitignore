@@ -1,0 +1,4 @@
+/vendor/
+/node_modules/
+/public/assests/css/output.css
+.env
