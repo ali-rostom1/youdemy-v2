@@ -47,4 +47,4 @@ Youdemy is an innovative online learning platform designed to provide an interac
 ## Installation
 1. Clone the repository:
    ```sh
-   git clone https://github.com/ali-rostom1/Youdemy.git
+   git clone https://github.com/ali-rostom1/youdemy-v2.git
