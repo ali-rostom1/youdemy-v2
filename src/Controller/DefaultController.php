@@ -124,7 +124,6 @@
             $student = $this->auth->getCurrentUser();
             $courses = !$term ? $this->courseDAO->getCoursesByStudent($student) : $this->courseDAO->searchCoursesByStudent($student,$term);
             $courseDataJson = json_encode($courses);
-
             $isLogged = $this->auth->isAuthenticated();
             $user = $this->auth->getCurrentUser();
             include "../src/Views/myCourses.php";

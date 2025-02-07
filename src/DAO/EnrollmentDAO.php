@@ -84,6 +84,6 @@ class EnrollmentDAO {
     {
         $query = "SELECT COUNT(*) AS TOTAL FROM Enrollment";
         $result = $this->con->query($query);
-        return $result->fetch(\PDO::FETCH_ASSOC)["TOTAL"];
+        return $result->fetch(\PDO::FETCH_ASSOC)["total"];
     }
 }

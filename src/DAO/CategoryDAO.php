@@ -73,7 +73,7 @@ class CategoryDAO {
     {
         $offset = ($page-1) * $perPage;
         
-        $query = "SELECT * FROM categoryCount LIMIT :offset,:perPage ";
+        $query = "SELECT * FROM categoryCount LIMIT :perPage OFFSET :offset ";
         
         $stmt = $this->con->prepare($query);
 
@@ -92,7 +92,7 @@ class CategoryDAO {
     {
         $query = "SELECT COUNT(*) AS TOTAL FROM categoryCount";
         $stmt = $this->con->query($query);
-        return $stmt->fetch(\PDO::FETCH_ASSOC)["TOTAL"];
+        return $stmt->fetch(\PDO::FETCH_ASSOC)["total"];
     }
     public function searchCategory($term) : array
     {

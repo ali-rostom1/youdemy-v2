@@ -140,7 +140,7 @@
         //other needed function
         public function getAllVideoCourses() : array
         {
-            $query = "SELECT * FROM courseCategoryUser where type= 'Video' ";
+            $query = "SELECT * FROM courseCategoryUser where type= 'video' ";
             $stmt = $this->con->query($query);
             $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             $courses = [];
@@ -150,19 +150,19 @@
             }
             return $courses;
         }
-        public function getVideoCoursesCount() : int
+        public function getVideoCoursesCount() : ?int
         {
-            $query = "SELECT count(*) as TOTAL FROM courses where type ='Video'";
+            $query = "SELECT count(*) as TOTAL FROM courses where type ='video'";
             $stmt = $this->con->query($query);
             $count = $stmt->fetch(\PDO::FETCH_ASSOC);
-            return isset($count["TOTAL"]) ? $count["TOTAL"] : NULL;
+            return isset($count["total"]) ? $count["total"] : NULL;
         }
-        public function getDocumentCoursesCount() : int
+        public function getDocumentCoursesCount() : ?int
         {
-            $query = "SELECT count(*) as TOTAL FROM courses where type ='Document'";
+            $query = "SELECT count(*) as TOTAL FROM courses where type ='document'";
             $stmt = $this->con->query($query);
             $count = $stmt->fetch(\PDO::FETCH_ASSOC);
-            return isset($count["TOTAL"]) ? $count["TOTAL"] : NULL;
+            return isset($count["total"]) ? $count["total"] : NULL;
         }
         public function getCoursesLimit($page) : ?array
         {
@@ -190,7 +190,7 @@
         {
             $query = "SELECT count(*) AS TOTAL FROM courses";
             $result = $this->con->query($query);
-            return $result->fetch(\PDO::FETCH_ASSOC)["TOTAL"];
+            return $result->fetch(\PDO::FETCH_ASSOC)["total"];
         }
         public function getAllCoursesPagination($page,$perPage,$category) : array
         {
@@ -201,7 +201,7 @@
             {
                 $query .= "WHERE category_id = :category_id ";
             }
-            $query .= "LIMIT :offset,:perPage ";
+            $query .= "LIMIT :perPage OFFSET :offset ";
             $stmt = $this->con->prepare($query);
             if($category)
             {
@@ -229,7 +229,7 @@
                 $stmt->bindParam(":category_id",$category,\PDO::PARAM_INT);
             }
             $stmt->execute();
-            return $stmt->fetch(\PDO::FETCH_ASSOC)["TOTAL"];
+            return $stmt->fetch(\PDO::FETCH_ASSOC)["total"];
         }
         public function searchCourses($term) : array
         {
@@ -260,7 +260,7 @@
             if($type){
                 $query .="AND type = :type ";
             }
-            $query.= "LIMIT :offset,:perPage ";
+            $query.= "LIMIT :perPage OFFSET :offset ";
 
             
             $stmt = $this->con->prepare($query);
@@ -288,34 +288,41 @@
         }
         public function getTotalCoursesFilter($category,$tag,$type) : int
         {
-            $query = !$tag ? "SELECT count(*) AS TOTAL FROM courseCategoryUser WHERE 1=1 " : "SELECT COUNT(*) AS TOTAL FROM courseCategoryUserTag WHERE 1=1 ";
+            try{
+                $query = !$tag ? "  " : "SELECT COUNT(*) AS TOTAL FROM courseCategoryUserTag WHERE 1=1 ";
 
-            if($category){
-                $query .= "AND category_id = :category_id ";
-            }
-            if($tag){
-                $query .= "AND tag_id = :tag_id ";
-            }
-            if($type){
-                $query .="AND type = :type ";
-            }
+                if($category){
+                    $query .= "AND category_id = :category_id ";
+                }
+                if($tag){
+                    $query .= "AND tag_id = :tag_id ";
+                }
+                if($type){
+                    $query .="AND type = :type ";
+                }
 
-            $stmt = $this->con->prepare($query);
+                $stmt = $this->con->prepare($query);
 
 
-            if($category){
-                $stmt->bindParam(":category_id",$category,\PDO::PARAM_INT);
-            }
-            if($tag){
-                $stmt->bindParam(":tag_id",$tag,\PDO::PARAM_INT);
-            }
-            if($type){
-                $stmt->bindParam(":type",$type,\PDO::PARAM_STR);
-            }
+                if($category){
+                    $stmt->bindParam(":category_id",$category,\PDO::PARAM_INT);
+                }
+                if($tag){
+                    $stmt->bindParam(":tag_id",$tag,\PDO::PARAM_INT);
+                }
+                if($type){
+                    $stmt->bindParam(":type",$type,\PDO::PARAM_STR);
+                }
 
-            $stmt->execute();
-            
-            return $stmt->fetch(\PDO::FETCH_ASSOC)["TOTAL"];
+                $stmt->execute();
+                
+                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+                return $result ? $result["total"] : 0;
+            }catch(\PDOException $e){
+                error_log("Error executing query: " . $e->getMessage());
+                return false;
+            }
         }
         public function getCoursesByStudent(User $student) : array
         {
@@ -334,7 +341,7 @@
                 return $courses;
 
             }catch(\PDOException){
-                return false;
+                return [];
             }
             
         }

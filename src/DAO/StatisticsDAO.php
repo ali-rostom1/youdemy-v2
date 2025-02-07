@@ -22,15 +22,15 @@ class StatisticsDAO{
         $stmt = $this->con->prepare($sql);
         $stmt->bindValue(':teacher_id', $teacher->id,\PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch()['TOTAL'];
+        return $stmt->fetch()['total'];
     }
     public function totalStudentsTeacher(User $teacher) : int
     {
-        $sql = "SELECT COUNT(DISTINCT student_id) as TOTAL FROM coursecategoryuserenrollment WHERE teacher_id = :teacher_id";
+        $sql = "SELECT COUNT(DISTINCT student_email) as TOTAL FROM coursecategoryuserenrollment WHERE teacher_id = :teacher_id";
         $stmt = $this->con->prepare($sql);
         $stmt->bindValue(':teacher_id', $teacher->id,\PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch()['TOTAL'];
+        return $stmt->fetch()['total'];
     }
     public function totalEnrollmentsTeacher(User $teacher) : int
     {
@@ -38,7 +38,7 @@ class StatisticsDAO{
         $stmt = $this->con->prepare($sql);
         $stmt->bindValue(':teacher_id', $teacher->id,\PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch()['TOTAL'];
+        return $stmt->fetch()['total'];
     }
     public function recentEnrollments(User $teacher) : array
     {
@@ -58,7 +58,7 @@ class StatisticsDAO{
     }
     public function totalEnrollmentsByMonthTeacher(User $teacher) : array
     {
-        $query = "SELECT DATE_FORMAT(enrollment_date, '%Y-%m') as month, COUNT(*) as TOTAL FROM coursecategoryuserenrollment WHERE teacher_id = :teacher_id GROUP BY month ORDER BY month";
+        $query = "SELECT TO_CHAR(enrollment_date, 'YYYY-MM') as month, COUNT(*) as TOTAL FROM coursecategoryuserenrollment WHERE teacher_id = :teacher_id GROUP BY month ORDER BY month;";
         $stmt = $this->con->prepare($query);
         $stmt->bindValue(':teacher_id',$teacher->id,\PDO::PARAM_INT);
         $stmt->execute();
@@ -66,7 +66,7 @@ class StatisticsDAO{
     }
     public function getTop3CoursesByTeacher(User $teacher) : array
     {
-        $query = "SELECT title, COUNT(*) as TOTAL FROM coursecategoryuserenrollment WHERE teacher_id = :teacher_id GROUP BY course_id ORDER BY TOTAL DESC LIMIT 3";
+        $query = "SELECT title, COUNT(*) as TOTAL FROM coursecategoryuserenrollment WHERE teacher_id = :teacher_id GROUP BY title ORDER BY TOTAL DESC LIMIT 3";
         $stmt = $this->con->prepare($query);
         $stmt->bindValue(':teacher_id',$teacher->id,\PDO::PARAM_INT);
         $stmt->execute();

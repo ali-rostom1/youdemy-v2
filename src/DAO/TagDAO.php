@@ -67,7 +67,7 @@ class TagDAO {
     {
         $offset = ($page-1) * $perPage;
         
-        $query = "SELECT * FROM tags LIMIT :offset,:perPage ";
+        $query = "SELECT * FROM tags LIMIT :perPage OFFSET :offset ";
         
         $stmt = $this->con->prepare($query);
 
@@ -86,7 +86,7 @@ class TagDAO {
     {
         $query = "SELECT COUNT(*) AS TOTAL FROM tags";
         $stmt = $this->con->query($query);
-        return $stmt->fetch(\PDO::FETCH_ASSOC)["TOTAL"];
+        return $stmt->fetch(\PDO::FETCH_ASSOC)["total"];
     }
     public function searchTag($term) : array
     {
